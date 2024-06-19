@@ -40,7 +40,7 @@ function News() {
         <div className=" w-[70%] popular border border-[#71767b] ml-5 rounded-xl py-2 px-3">
             <h6 className="font-bold ">What’s happening</h6>
             {news.map((news) => (
-                <div className='flex justify-between mt-5'>
+                <div key={news.trend} className='flex justify-between mt-5'>
                     <div className='cursor-pointer'>
                         <p className='text-xs text-slate-600'>{news.trend}</p>
                         <p className='text-sm font-bold'>{news.tag}</p>
