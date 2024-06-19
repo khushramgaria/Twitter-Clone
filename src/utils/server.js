@@ -1,19 +1,23 @@
-export const registerServer = "http://localhost:8000/api/v1/users/register"
+const server = "https://twitter-clone-backend-i7jj.onrender.com/api/v1"
 
-export const loginServer = "http://localhost:8000/api/v1/users/login"
+const local = "http://localhost:8000/api/v1"
 
-export const logoutServer = "http://localhost:8000/api/v1/users/logout"
+export const registerServer = `${server}/users/register`
 
-export const updateAvatarServer = "http://localhost:8000/api/v1/users/update-avatar"
+export const loginServer = `${server}/users/login`
 
-export const updateCoverImageServer = "http://localhost:8000/api/v1/users/update-coverimage"
+export const logoutServer = `${server}/users/logout`
 
-export const getCurrentUserServer = "http://localhost:8000/api/v1/users/get-current-user"
+export const updateAvatarServer = `${server}/users/update-avatar`
 
-export const publishTweetServer = "http://localhost:8000/api/v1/tweet/publish-a-tweet"
+export const updateCoverImageServer = `${server}/users/update-coverimage`
 
-export const getUserTweetsServer = "http://localhost:8000/api/v1/tweet/get-user-tweets"
+export const getCurrentUserServer = `${server}/users/get-current-user`
 
-export const deleteTweetServer = "http://localhost:8000/api/v1/tweet/delete-tweet"
+export const publishTweetServer = `${server}/tweet/publish-a-tweet`
 
-export const getAllTweetServer = "http://localhost:8000/api/v1/tweet/get-all-tweets"
+export const getUserTweetsServer = `${server}/tweet/get-user-tweets`
+
+export const deleteTweetServer = `${server}/tweet/delete-tweet`
+
+export const getAllTweetServer = `${server}/tweet/get-all-tweets`
