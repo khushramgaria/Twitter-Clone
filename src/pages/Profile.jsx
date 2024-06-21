@@ -13,7 +13,7 @@ import { CiHeart, CiBookmark } from "react-icons/ci";
 import { RiShare2Line } from "react-icons/ri";
 import { RiDeleteBin5Fill } from "react-icons/ri";
 import { BsPin } from "react-icons/bs";
-import { deleteTweetServer } from "../utils/server";
+import { deleteTweetServer, getATweetServer } from "../utils/server";
 import axios from "axios";
 
 function Profile() {
@@ -22,6 +22,7 @@ function Profile() {
   const { userTweets, tweetsCount } = useGetUserTweets();
   const [visibleDropdown, setVisibleDropdown] = useState(null);
   const [_id, set_id] = useState("")
+  const [newTweetId, setNewTweetId] = useState("")
 
   const toggleDropdown = (id) => {
     setVisibleDropdown(visibleDropdown === id ? null : id);
@@ -49,6 +50,24 @@ function Profile() {
       navigate(0)
     } catch (error) {
       console.log("Error while deleting tweet !!", error)
+    }
+  }
+
+  const viewHandler = async(_id) => {
+    // e.preventDefault()
+    // navigate("/viewtweet", { state: { tweetId: _id } })
+
+    console.log("_id in profile:", _id)
+
+    try {
+      const response = await axios.get(`${getATweetServer}?newTweetId=${_id}`);
+
+      console.log("response: ", response.data.data[0])
+
+      navigate("/viewtweet", { state: { data: response.data.data[0], _id }})
+
+    } catch (error) {
+      console.log("Error while getting tweet !!", error)
     }
   }
 
@@ -145,7 +164,7 @@ function Profile() {
                         @{username} . {post.createdAt}
                       </span>
                     </p>
-                    <p className="text-[11px] pt-1">{post.description}</p>
+                    <p className="text-[11px] pt-1 cursor-pointer" onClick={() => viewHandler(post._id)}>{post.description}</p>
                   </div>
                 </div>
                 <div className="icon cursor-pointer hover:text-[#1d9bf0]">
@@ -177,11 +196,11 @@ function Profile() {
                 {/* <div className="text-justify px-10 text-xs">{post.bio}</div> */}
               </div>
               <div className="ml-9">
-                <img src={post.media} className="rounded-3xl my-3 mb-4 w-52" />
+                <img src={post.media} className="rounded-3xl my-3 mb-4 w-52 cursor-pointer" onClick={() => viewHandler(post._id)} />
               </div>
               <div className="flex">
               <div className="flex justify-between text-base pl-7 pr-2 w-full">
-                <FaRegComment className="cursor-pointer text-[#71767b]" />
+                <FaRegComment className="cursor-pointer text-[#71767b]" onClick={() => viewHandler(post._id)} />
                 <BiRepost className="cursor-pointer text-[#71767b] text-lg" />
                 <CiHeart className="cursor-pointer text-[#71767b] text-lg" />
                 <CgInsights className="cursor-pointer text-[#71767b] text-lg" />

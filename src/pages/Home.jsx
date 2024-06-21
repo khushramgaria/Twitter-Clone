@@ -11,11 +11,31 @@ import { BsPin } from "react-icons/bs";
 import PublishTweet from "../components/PublishTweet";
 import useGetAllTweets from "../utils/getAllTweets";
 import { useNavigate } from "react-router-dom";
+import { getATweetServer } from "../utils/server";
+import axios from "axios";
 
 function Home() {
   const { allTweets } = useGetAllTweets()
   console.log("All Tweets: ", allTweets)
   const navigate = useNavigate()
+
+  const viewHandler = async(_id) => {
+    // e.preventDefault()
+    // navigate("/viewtweet", { state: { tweetId: _id } })
+
+    console.log("_id in profile:", _id)
+
+    try {
+      const response = await axios.get(`${getATweetServer}?newTweetId=${_id}`);
+
+      console.log("response: ", response.data.data[0])
+
+      navigate("/viewtweet", { state: { data: response.data.data[0] }})
+
+    } catch (error) {
+      console.log("Error while getting tweet !!", error)
+    }
+  }
   return (
     <>
       <Wrapper>
@@ -39,7 +59,7 @@ function Home() {
                         @{tweet.userDetails.username} . {tweet.createdAt}
                       </span>
                     </p>
-                    <p className="text-[11px] pt-1" onClick={() => navigate("/viewtweet", { state: {}})}>{tweet.description}</p>
+                    <p className="text-[11px] pt-1 cursor-pointer" onClick={() => viewHandler(tweet._id)}>{tweet.description}</p>
                   </div>
                 </div>
                 <div className="icon cursor-pointer hover:text-[#1d9bf0]">
@@ -71,11 +91,11 @@ function Home() {
                 {/* <div className="text-justify px-10 text-xs">{post.bio}</div> */}
               </div>
               <div className="ml-9">
-                <img src={tweet.media} className="rounded-3xl my-3 mb-4 w-52" />
+                <img src={tweet.media} className="rounded-3xl my-3 mb-4 w-52 cursor-pointer" onClick={() => viewHandler(tweet._id)} />
               </div>
               <div className="flex">
               <div className="flex justify-between text-base pl-7 pr-2 w-full">
-                <FaRegComment className="cursor-pointer text-[#71767b]" />
+                <FaRegComment className="cursor-pointer text-[#71767b]" onClick={() => viewHandler(tweet._id)}  />
                 <BiRepost className="cursor-pointer text-[#71767b] text-lg" />
                 <CiHeart className="cursor-pointer text-[#71767b] text-lg" />
                 <CgInsights className="cursor-pointer text-[#71767b] text-lg" />
