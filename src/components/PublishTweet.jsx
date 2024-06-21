@@ -14,9 +14,9 @@ import { IoArrowBack } from 'react-icons/io5'
 import { FaEarthAfrica } from "react-icons/fa6";
 import { IoMdSettings } from "react-icons/io";
 import Input from '../components/Input'
-import { publishTweetServer } from '../utils/server'
+import { getATweetServer, publishTweetServer } from '../utils/server'
 import axios from 'axios'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate, Link } from 'react-router-dom'
 
 function PublishTweet() {
     const [media, setMedia] = useState()
@@ -27,6 +27,7 @@ function PublishTweet() {
     const [failedPublishing, setFailedPublishing ] = useState(false)
     const [inHomeTab, setInHomeTab] = useState(false)
     const [inTweetTab, setInTweetTab] = useState(true)
+    const [newTweetId, setNewTweetId] = useState("")
 
     const  { avatar } = useGetCurrentUser()
     const tweetRef = useRef()
@@ -90,13 +91,12 @@ function PublishTweet() {
 
       if(response.data.statusCode === 200) {
         console.log("Tweet Published !!")
+        console.log(response.data.data._id)
       }
       // navigate("/profile")
       setIsPublishing(false)
       setTweetPublished(true)
-      setTimeout(() => {
-        setTweetPublished(false)
-      }, 5000)
+      setNewTweetId(response.data.data._id)
       setMedia()
       setShowMedia()
       setDescription("")
@@ -107,6 +107,22 @@ function PublishTweet() {
       }
     }
 
+    const viewHandler = async(e) => {
+      e.preventDefault()
+      // navigate("/viewtweet", { state: { tweetId: _id } })
+
+      try {
+        const response = await axios.get(`${getATweetServer}?newTweetId=${newTweetId}`);
+
+        console.log("response: ", response.data.data[0])
+
+        navigate("/viewtweet", { state: { data: response.data.data[0] }})
+
+      } catch (error) {
+        console.log("Error while getting tweet !!", error)
+      }
+    }
+
     return (
     <>
         {inTweetTab && 
@@ -114,6 +130,7 @@ function PublishTweet() {
             <div>
                 <IoArrowBack 
                 className='text-3xl hover:text-[#1d9bf0] cursor-pointer hover:bg-[#202327] p-1 hover:rounded-full'
+                onClick={() => navigate(-1)}
                 />
             </div>
         </div>
@@ -170,13 +187,13 @@ function PublishTweet() {
             </div>
             <div className='border-b border-[#71767b] mt-4'></div>
             <div className="flex justify-between items-center mt-2">
-              <div className="icons flex text-lg pt-5 pl-7 items-center">
-                <label htmlFor='choose-post'><GrGallery className="cursor-pointer text-[#1d9bf0] hover:bg-[#1d9cf020] p-2 text-4xl rounded-full" /></label>
-                <HiOutlineGif className="cursor-pointer text-[#1d9bf0] hover:bg-[#1d9cf020] p-2 text-4xl rounded-full" />
-                <RiListRadio className="cursor-pointer text-[#1d9bf0] hover:bg-[#1d9cf020] p-2 text-4xl rounded-full" />
-                <FaRegSmile className="cursor-pointer text-[#1d9bf0] hover:bg-[#1d9cf020] p-2 text-4xl rounded-full" />
-                <RiCalendarScheduleLine className="cursor-pointer text-[#1d9bf0] hover:bg-[#1d9cf020] p-2 text-4xl rounded-full" />
-                <CiLocationOn className="cursor-pointer text-[#1d9bf0] hover:bg-[#1d9cf020] p-2 text-4xl rounded-full" />
+              <div className="icons flex text-lg pt-5 md:pl-7 pl-1 items-center">
+                <label htmlFor='choose-post'><GrGallery className="cursor-pointer text-[#1d9bf0] hover:bg-[#1d9cf020] p-2 md:text-4xl text-3xl rounded-full" /></label>
+                <HiOutlineGif className="cursor-pointer text-[#1d9bf0] hover:bg-[#1d9cf020] p-2 md:text-4xl text-3xl rounded-full" />
+                <RiListRadio className="cursor-pointer text-[#1d9bf0] hover:bg-[#1d9cf020] p-2 md:text-4xl text-3xl rounded-full" />
+                <FaRegSmile className="cursor-pointer text-[#1d9bf0] hover:bg-[#1d9cf020] p-2 md:text-4xl text-3xl rounded-full" />
+                <RiCalendarScheduleLine className="cursor-pointer text-[#1d9bf0] hover:bg-[#1d9cf020] p-2 md:text-4xl text-3xl rounded-full" />
+                <CiLocationOn className="cursor-pointer text-[#1d9bf0] hover:bg-[#1d9cf020] p-2 md:text-4xl text-3xl rounded-full" />
               </div>
               <Input type="file" id="choose-post" className="hidden" onChange={onChangeMedia} />
               <div>
@@ -196,7 +213,7 @@ function PublishTweet() {
         }
         {tweetPublished && 
         <div className='ml-3 p-4'>
-          <p className='text-[#1d9bf0] font-bold'>Tweet Published !!</p>
+          <p className='text-[#1d9bf0] font-bold'>Tweet Published !! <button onClick={() => viewHandler}>View</button></p>
         </div>
         }
         {failedPublishing && 

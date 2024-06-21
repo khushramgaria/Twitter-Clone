@@ -20,7 +20,7 @@ function Input(props) {
         placeholder={props.name}
         onChange={onChangeHandler}
         value={props.value}
-        className={`bg-transparent border outline-none border-gray-500 rounded-md py-[10px] px-2 w-96 hover:border-[#1d9bf0] focus:border-[#1d9bf0] hover:placeholder:text-[#1d9bf0] focus:placeholder:text-[#1d9bf0] ${props.className}`}
+        className={`bg-transparent border outline-none border-gray-500 rounded-md py-[10px] px-2 md:w-96 w-80 hover:border-[#1d9bf0] focus:border-[#1d9bf0] hover:placeholder:text-[#1d9bf0] focus:placeholder:text-[#1d9bf0] ${props.className}`}
       />
     </div>
   );

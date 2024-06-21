@@ -1,12 +1,12 @@
-const server = "https://twitter-clone-backend-i7jj.onrender.com/api/v1"
-
-const local = "http://localhost:8000/api/v1"
+import { server } from "./constants"
 
 export const registerServer = `${server}/users/register`
 
 export const loginServer = `${server}/users/login`
 
 export const logoutServer = `${server}/users/logout`
+
+export const updateUserDetailsServer = `${server}/users/update-details`
 
 export const updateAvatarServer = `${server}/users/update-avatar`
 
@@ -21,3 +21,5 @@ export const getUserTweetsServer = `${server}/tweet/get-user-tweets`
 export const deleteTweetServer = `${server}/tweet/delete-tweet`
 
 export const getAllTweetServer = `${server}/tweet/get-all-tweets`
+
+export const getATweetServer = `${server}/tweet/get-a-tweet`

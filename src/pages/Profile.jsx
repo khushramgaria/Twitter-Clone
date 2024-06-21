@@ -18,7 +18,7 @@ import axios from "axios";
 
 function Profile() {
   const navigate = useNavigate();
-  const { name, username, avatar, coverImage, createdAt } = useGetCurrentUser();
+  const { name, username, avatar, coverImage, createdAt, bio } = useGetCurrentUser();
   const { userTweets, tweetsCount } = useGetUserTweets();
   const [visibleDropdown, setVisibleDropdown] = useState(null);
   const [_id, set_id] = useState("")
@@ -76,7 +76,7 @@ function Profile() {
           <div className="">
             <img
               src={avatar}
-              className="absolute top-48 object-cover w-36 h-36 rounded-full border-4 border-black"
+              className="absolute md:top-48 top-52 object-cover w-20 h-20 md:w-36 md:h-36 rounded-full border-4 border-black"
             />
           </div>
           <div className="mt-4">
@@ -93,15 +93,18 @@ function Profile() {
             <h1 className="text-xl font-bold">{name}</h1>
             <p className="text-sm text-[#71767b]">@{username}</p>
           </div>
+          <div className="mt-2">
+            <p className="text-sm">{bio}</p>
+          </div>
           <div className="flex items-center mt-2 gap-2">
             <PiCalendarMinusDuotone className="text-[#71767b]" />
-            <p className="text-[#71767b]">Joined {createdAt}</p>
+            <p className="text-[#71767b] md:text-base text-sm">Joined {createdAt}</p>
           </div>
           <div className="flex text-sm gap-4 mt-2">
-            <p className="text-[#71767b]">
+            <p className="text-[#71767b]  md:text-base text-sm">
               <span className="font-bold text-white">0</span> Following
             </p>
-            <p className="text-[#71767b]">
+            <p className="text-[#71767b]  md:text-base text-sm">
               <span className="font-bold text-white">0</span> Followers
             </p>
           </div>
@@ -111,13 +114,13 @@ function Profile() {
             <h6 className="border-b-4 pb-3 border-[#1d9bf0] cursor-pointer text-xs font-bold">
               Posts
             </h6>
-            <h6 className="text-[#71767b] cursor-pointer text-xs">Replies</h6>
-            <h6 className="text-[#71767b] cursor-pointer text-xs">
+            <h6 className="text-[#71767b] cursor-pointer text-[10px] md:text-xs">Replies</h6>
+            <h6 className="text-[#71767b] cursor-pointer text-[10px] md:text-xs">
               Highlights
             </h6>
-            <h6 className="text-[#71767b] cursor-pointer text-xs">Articles</h6>
-            <h6 className="text-[#71767b] cursor-pointer text-xs">Media</h6>
-            <h6 className="text-[#71767b] cursor-pointer text-xs">Likes</h6>
+            <h6 className="text-[#71767b] cursor-pointer text-[10px] md:text-xs">Articles</h6>
+            <h6 className="text-[#71767b] cursor-pointer text-[10px] md:text-xs">Media</h6>
+            <h6 className="text-[#71767b] cursor-pointer text-[10px] md:text-xs">Likes</h6>
           </div>
           {/* <div className="px-3 mb-3">
                 <IoMdSettings className="cursor-pointer" />

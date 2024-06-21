@@ -9,6 +9,10 @@ const useGetCurrentUser = () => {
     const [avatar, setAvatar] = useState('');
     const [coverImage, setCoverImage] = useState('');
     const [createdAt, setCreatedAt] = useState('');
+    const [bio, setBio] = useState('');
+    const [website, setWebsite] = useState('');
+    const [location, setLocation] = useState('');
+    const [loading, setLoading] = useState(true);
 
     const accessToken = localStorage.getItem("accessToken")
 
@@ -28,11 +32,10 @@ const useGetCurrentUser = () => {
                 setAvatar(response.data.data.avatar);
                 setCoverImage(response.data.data.coverImage);
                 setCreatedAt(response.data.data.createdAt)
-
-                console.log(name)
-                console.log(username)
-                console.log(avatar)
-                console.log(coverImage)
+                setBio(response.data.data.bio)
+                setLocation(response.data.data.location)
+                setWebsite(response.data.data.website)
+                setLoading(false)
             } catch (error) {
                 console.log("Error fetching user bcoz of invalid access token")
             }
@@ -41,7 +44,7 @@ const useGetCurrentUser = () => {
         fetchUser()
     }, [accessToken])
 
-    return { name, username, email, avatar, coverImage, createdAt }
+    return { name, username, email, avatar, coverImage, createdAt, bio, website, location, loading }
 }
 
 export default useGetCurrentUser

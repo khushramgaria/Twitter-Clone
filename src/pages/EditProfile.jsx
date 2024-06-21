@@ -1,23 +1,50 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Wrapper from '../components/Wrapper'
 import { IoArrowBack } from 'react-icons/io5'
 import Input from "../components/Input"
 import { IoIosArrowForward } from "react-icons/io";
 import { useNavigate } from 'react-router-dom';
-import { updateAvatarServer, updateCoverImageServer } from '../utils/server';
+import { updateAvatarServer, updateCoverImageServer, updateUserDetailsServer } from '../utils/server';
 import axios from 'axios';
+import useGetCurrentUser from '../utils/getCurrentUser';
 
 function EditProfile() {
     const navigate = useNavigate()
-    const [avatar, setAvatar] = useState()
-    const [coverImage, setCoverImage] = useState()
+    const { name, bio, location, website, loading } = useGetCurrentUser()
+    const [updateAvatar, setAvatar] = useState()
+    const [updateCoverImage, setCoverImage] = useState()
+    const [updateName, setName] = useState(name ? name : "0")
+    const [updateBio, setBio] = useState(bio)
+    const [updateLocation, setLocation] = useState(location)
+    const [updateWebsite, setWebsite] = useState(website)
     const [savingBtn, setSavingBtn] = useState(false)
+
+    useEffect(() => {
+        if (!loading) { // Only update state if not loading
+            setName(name || "");
+            setBio(bio || "");
+            setLocation(location || "");
+            setWebsite(website || "");
+        }
+    }, [loading, name, bio, location, website]);
 
     const onChangeAvatar = (value) => {
         setAvatar(value)
     }
     const onChangeCoverImage = (value) => {
         setCoverImage(value)
+    }
+    const onChangeName = (value) => {
+        setName(value)
+    }
+    const onChangeBio = (value) => {
+        setBio(value)
+    }
+    const onChangeLocation = (value) => {
+        setLocation(value)
+    }
+    const onChangeWebsite = (value) => {
+        setWebsite(value)
     }
 
     const accessToken = localStorage.getItem("accessToken")
@@ -28,13 +55,13 @@ function EditProfile() {
         setSavingBtn(true)
 
         const AvatarFormData = new FormData()
-        AvatarFormData.append("avatar", avatar)
+        AvatarFormData.append("avatar", updateAvatar)
         const CoverImageFormData = new FormData()
-        CoverImageFormData.append("coverImage", coverImage)
+        CoverImageFormData.append("coverImage", updateCoverImage)
 
         try {
             console.log("Updating Avatar....")
-            if (avatar) {
+            if (updateAvatar) {
                 await axios.patch(updateAvatarServer, AvatarFormData, {
                     headers: {
                         'Authorization': `Bearer ${accessToken}`
@@ -43,12 +70,27 @@ function EditProfile() {
             }
 
             console.log("Updating Cover Image....")   
-            if (coverImage) {
+            if (updateCoverImage) {
                 await axios.patch(updateCoverImageServer, CoverImageFormData, {
                     headers: {
                         'Authorization': `Bearer ${accessToken}`
                     }
                 })    
+            }
+
+            console.log("Updating User Details....")
+            if (updateName || updateBio || updateLocation || updateWebsite || updateDob) {
+                await axios.post(updateUserDetailsServer, {
+                    fullName: updateName,
+                    bio: updateBio,
+                    location: updateLocation,
+                    website: updateWebsite,
+                    dob: updateDob
+                },{
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem("accessToken")}`
+                    }
+                })
             }
 
             console.log("Updaiton successfully !!")
@@ -89,11 +131,10 @@ function EditProfile() {
                     <Input type="file" onChange={onChangeAvatar} />
                 </div>
                 <div className='space-y-6'>
-                    <Input type="text" name="Name" />
-                    <Input type="text" name="Bio" />
-                    <Input type="text" name="Location" />
-                    <Input type="text" name="Website" />
-                    <Input type="text" name="DOB" />
+                    <Input type="text" name="Name" onChange={onChangeName} value={updateName} />
+                    <Input type="text" name="Bio" onChange={onChangeBio} value={updateBio} />
+                    <Input type="text" name="Location" onChange={onChangeLocation} value={updateLocation} />
+                    <Input type="text" name="Website" onChange={onChangeWebsite} value={updateWebsite} />
                 </div>
             </div>
             <div className='flex justify-between px-4 hover:bg-[#202327] py-2 cursor-pointer my-5 items-center'>
