@@ -79,13 +79,13 @@ function EditProfile() {
             }
 
             console.log("Updating User Details....")
-            if (updateName || updateBio || updateLocation || updateWebsite || updateDob) {
+            if (updateName || updateBio || updateLocation || updateWebsite) {
                 await axios.post(updateUserDetailsServer, {
                     fullName: updateName,
                     bio: updateBio,
                     location: updateLocation,
                     website: updateWebsite,
-                    dob: updateDob
+                    // dob: updateDob
                 },{
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem("accessToken")}`

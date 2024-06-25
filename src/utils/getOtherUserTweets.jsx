@@ -1,32 +1,35 @@
 import { useEffect, useState } from "react"
-import { getAllTweetServer } from "./server"
+import { getOtherUserTweetServer } from "./server"
 import axios from "axios"
 
-const useGetAllTweets = () => {
+const useGetOtherUserTweets = (data) => {
     // const [name, setName] = useState('');
     // const [username, setUsername] = useState('');
     // const [avatar, setAvatar] = useState('');
     // const [createdAt, setCreatedAt] = useState('');
-    const [allTweets, setAllTweets] = useState([])
+    const [userTweets, setUserTweets] = useState("")
+    const [tweetsCount, setTweetsCount] = useState("")
 
-    // const accessToken = localStorage.getItem("accessToken")
+    const accessToken = localStorage.getItem("accessToken")
 
     useEffect(() => {
         const fetchUserTweets = async () => {
+            console.log("data in usegetotherusertweet : ", data)
             try {
-                const response = await axios.get(getAllTweetServer, {
+                const tweetResponse = await axios.post(getOtherUserTweetServer, { username : data }, {
                     headers: {
-                        Authorization: `Bearer ${localStorage.getItem("accessToken")}`
-                      },
+                        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+                    },
                 })
 
                 // console.log(userResponse)
-                console.log("tweetResponse: ",response)
+                console.log(tweetResponse)
                 // setName(userResponse.data.data.fullName);
                 // setUsername(userResponse.data.data.username);
                 // setAvatar(userResponse.data.data.avatar);
                 // setCreatedAt(userResponse.data.data.createdAt)
-                setAllTweets(response.data.data)
+                setUserTweets(tweetResponse.data.data.tweets)
+                setTweetsCount(tweetResponse.data.data.tweetsCount)
 
             } catch (error) {
                 console.log("Error fetching user bcoz of invalid access token")
@@ -34,9 +37,9 @@ const useGetAllTweets = () => {
         }
 
         fetchUserTweets()
-    }, [])
+    }, [accessToken])
 
-    return { allTweets }
+    return { userTweets, tweetsCount }
 }
 
-export default useGetAllTweets
+export default useGetOtherUserTweets

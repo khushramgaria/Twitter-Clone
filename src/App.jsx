@@ -7,6 +7,7 @@ import Profile from "./pages/Profile"
 import EditProfile from "./pages/EditProfile"
 import Tweet from "./pages/Tweet"
 import ViewTweet from "./pages/ViewTweet"
+import UserProfile from "./pages/UserProfile"
 
 function App() {
 
@@ -21,6 +22,7 @@ function App() {
           <Route path="/editprofile" element={<EditProfile/>} />
           <Route path="/tweet" element={<Tweet/>} />
           <Route path="/viewtweet" element={<ViewTweet/>} />
+          <Route path="/getotheruser" element={<UserProfile/>} />
         </Routes>
       </div>
     </>

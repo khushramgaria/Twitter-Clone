@@ -159,6 +159,7 @@ function PublishTweet(props) {
 
     const viewHandler = async(e) => {
       e.preventDefault()
+      console.log("hi")
       // navigate("/viewtweet", { state: { tweetId: _id } })
 
       try {
@@ -278,7 +279,7 @@ function PublishTweet(props) {
           {viewTweetComp ? (
             <p className='text-[#1d9bf0] font-bold'>Reply Posted !!</p>
           ) : (
-            <p className='text-[#1d9bf0] font-bold'>Tweet Published !! <button onClick={() => viewHandler}>View</button></p>
+            <p className='text-[#1d9bf0] font-bold'>Tweet Published !! <button onClick={viewHandler}>View</button></p>
           )}
         </div>
         }

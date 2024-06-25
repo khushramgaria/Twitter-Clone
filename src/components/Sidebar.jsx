@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { GoHomeFill } from "react-icons/go";
 import { FaSearch, FaRegBell, FaRegBookmark } from "react-icons/fa";
 import {
@@ -11,12 +11,15 @@ import { FaXTwitter } from "react-icons/fa6";
 import { CgMoreO } from "react-icons/cg";
 import profileimg from "../assets/profile.jpg";
 import useGetCurrentUser from "../utils/getCurrentUser";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import Input from "./Input";
 import { BsPencilSquare } from "react-icons/bs";
+import axios from "axios";
+import { logoutServer } from "../utils/server";
 
 function Sidebar() {
   const { name, username, avatar } = useGetCurrentUser();
+  const [isVisibleDropdown, setIsVisibleDropdown] = useState(false)
   const navigate = useNavigate()
   const navigator = [
     { icon: <GoHomeFill />, name: "Home", link: "/home"},
@@ -30,6 +33,24 @@ function Sidebar() {
     { icon: <IoPersonOutline />, name: "Profile", link: "/profile" },
     { icon: <CgMoreO />, name: "More" },
   ];
+
+  const logoutHandler = async() => {
+
+    try {
+      const response = await axios.post(logoutServer, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`
+        }
+      })
+
+      console.log(response)
+      navigate("/login")
+
+    } catch (error) {
+      console.log("Error while logging out !!", error)
+    }
+  }
+
   return (
     <div className="first w-10 md:w-[70%] border-r h-screen border-[#71767b] sticky top-0">
       <div className="sticky top-0 pt-1 sm:pr-4">
@@ -64,7 +85,10 @@ function Sidebar() {
               </label>
               {/* <Input type="file" id="post" className="hidden" /> */}
             </li>
-            <li className="flex gap-2 justify-between items-center hover:bg-[#202327] hover:rounded-3xl px-2 py-1 my-8">
+            <li 
+            className="flex gap-2 justify-between items-center hover:bg-[#202327] hover:rounded-3xl px-2 py-1 my-8 cursor-pointer font-bold"
+            onClick={() => setIsVisibleDropdown(!isVisibleDropdown)}
+            >
               <div className="flex gap-2">
                 <div className="img">
                   <img src={avatar} className="md:w-8 md:h-8 object-cover rounded-full" />
@@ -77,6 +101,21 @@ function Sidebar() {
               <div className="icon hidden md:block">
                 <CgMoreO />
               </div>
+              {isVisibleDropdown &&
+              <div className="absolute bottom-14 left-32 rounded-xl bg-black border border-[#71767b] py-3 w-[70%] ">
+                <p 
+                className="py-3 px-6 text-base hover:bg-[#202327] cursor-pointer"
+                >
+                  Add an existing account
+                </p>
+                <p 
+                className="py-3 px-6 text-base hover:bg-[#202327] cursor-pointer"
+                onClick={logoutHandler}
+                >
+                  Log out @{username}
+                </p>
+              </div>
+              }
             </li>
           </ul>
         </div>

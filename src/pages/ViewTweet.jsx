@@ -12,6 +12,9 @@ import { RiDeleteBin5Fill } from "react-icons/ri";
 import { BsPin } from "react-icons/bs";
 import PublishTweet from "../components/PublishTweet";
 import useGetAllComments from "../utils/getAllComments";
+import { likeTweetServer } from "../utils/server";
+import { IoHeartOutline } from "react-icons/io5";
+import { IoHeartSharp } from "react-icons/io5";
 
 function ViewTweet () {
   const location = useLocation();
@@ -22,7 +25,24 @@ function ViewTweet () {
 
   console.log("data in view tweet: ", data);
 
-  console.log("commments in view tweet: ", allComments.comments)
+  // console.log("commments in view tweet: ", allComments.totalComments[0].commentsCount)
+
+  const likeHandler = async(tweetId) => {
+    console.log("tweetId in profile likehandler: ", tweetId)
+
+    try {
+      const response = await axios.post(likeTweetServer, { tweetId }, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem("accessToken")}`
+        }
+      })
+
+      console.log("like response: ", response)
+    } catch (error) {
+      console.log("Error while liking tweet !!", error)
+    }
+  }
+
 
   return (
     <Wrapper>
@@ -80,9 +100,15 @@ function ViewTweet () {
         </div>
         <div className="flex">
           <div className="flex justify-between text-base pl-7 pr-2 w-full">
-            <FaRegComment className="cursor-pointer text-[#71767b]" />
+            <div className="flex gap-1 text-[#71767b]">
+              <FaRegComment className="cursor-pointer text-[#71767b]" />
+              <small className="mt-[-4px]">{data.commentsCount === 0 ? "" : data.commentsCount}</small>
+            </div>
             <BiRepost className="cursor-pointer text-[#71767b] text-lg" />
-            <CiHeart className="cursor-pointer text-[#71767b] text-lg" />
+            <div className="flex gap-1 text-[#71767b]">
+              <IoHeartOutline className="cursor-pointer text-[#71767b] text-lg" onClick={() => likeHandler(post._id)} />
+              <small className="mt-[-3px]">{data.likesCount === 0 ? "" : data.likesCount}</small>
+            </div>
             <CgInsights className="cursor-pointer text-[#71767b] text-lg" />
             <CiBookmark className="cursor-pointer text-[#71767b] text-lg" />
           </div>

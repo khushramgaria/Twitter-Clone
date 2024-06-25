@@ -1,44 +1,40 @@
 import { useEffect, useState } from "react"
-import { getCurrentUserServer } from "./server"
+import { getUserChannelProfileServer } from "./server"
 import axios from "axios"
 
-const useGetCurrentUser = () => {
+const useGetUserAccountProfile = ( data ) => {
     const [name, setName] = useState('');
     const [username, setUsername] = useState('');
-    const [email, setEmail] = useState('');
     const [avatar, setAvatar] = useState('');
     const [coverImage, setCoverImage] = useState('');
     const [createdAt, setCreatedAt] = useState('');
     const [bio, setBio] = useState('');
-    const [website, setWebsite] = useState('');
-    const [location, setLocation] = useState('');
-    const [followers, setFollowers] = useState();
-    const [following, setFollowing] = useState();
+    const [userFollowers, setUserFollowers] = useState('');
+    const [userFollowedTo, setUserFollowedTo] = useState('');
     const [loading, setLoading] = useState(true);
-
-    const accessToken = localStorage.getItem("accessToken")
+    const [isFollowed, setIsFollowed] = useState()
 
     useEffect(() => {
         const fetchUser = async () => {
+            console.log(data)
             try {
-                const response = await axios.get(getCurrentUserServer, {
+                const response = await axios.get(getUserChannelProfileServer, {
+                    params: { username: data },
                     headers: {
-                        'Authorization': `Bearer ${accessToken}`
-                    }
+                        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+                    },
                 })
 
                 console.log(response)
                 setName(response.data.data[0].fullName);
                 setUsername(response.data.data[0].username);
-                setEmail(response.data.data[0].email)
                 setAvatar(response.data.data[0].avatar);
                 setCoverImage(response.data.data[0].coverImage);
                 setCreatedAt(response.data.data[0].createdAt)
                 setBio(response.data.data[0].bio)
-                setLocation(response.data.data[0].location)
-                setWebsite(response.data.data[0].website)
-                setFollowers(response.data.data[0].followersCount)
-                setFollowing(response.data.data[0].channelFollowedToCount)
+                setUserFollowers(response.data.data[0].followersCount)
+                setUserFollowedTo(response.data.data[0].channelFollowedToCount)
+                setIsFollowed(response.data.data[0].isFollowed)
                 setLoading(false)
             } catch (error) {
                 console.log("Error fetching user bcoz of invalid access token")
@@ -46,9 +42,9 @@ const useGetCurrentUser = () => {
         }
 
         fetchUser()
-    }, [accessToken])
+    }, [])
 
-    return { name, username, email, avatar, coverImage, createdAt, bio, website, location, loading, followers, following }
+    return { name, username, avatar, coverImage, createdAt, bio, userFollowers, userFollowedTo, isFollowed, loading }
 }
 
-export default useGetCurrentUser
+export default useGetUserAccountProfile

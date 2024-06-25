@@ -2,9 +2,9 @@ import React, {useState } from "react";
 import Wrapper from "../components/Wrapper";
 import { IoArrowBack } from "react-icons/io5";
 import { PiCalendarMinusDuotone } from "react-icons/pi";
-import { useNavigate } from "react-router-dom";
-import useGetCurrentUser from "../utils/getCurrentUser";
-import useGetUserTweets from "../utils/getUserAllTweets";
+import { useLocation, useNavigate } from "react-router-dom";
+// import useGetCurrentUser from "../utils/getCurrentUser";
+// import useGetUserTweets from "../utils/getUserAllTweets";
 import { CgMoreO } from "react-icons/cg";
 import { BiRepost } from "react-icons/bi";
 import { CgInsights } from "react-icons/cg";
@@ -15,16 +15,26 @@ import { IoHeartOutline } from "react-icons/io5";
 import { IoHeartSharp } from "react-icons/io5";
 import { RiDeleteBin5Fill } from "react-icons/ri";
 import { BsPin } from "react-icons/bs";
-import { deleteTweetServer, getATweetServer, likeTweetServer } from "../utils/server";
+import { deleteTweetServer, followServer, getATweetServer, likeTweetServer } from "../utils/server";
 import axios from "axios";
+import useGetOtherUser from "../utils/getOtherUser";
+import useGetOtherUserTweets from "../utils/getOtherUserTweets";
+import { BiVolumeMute } from "react-icons/bi";
+import { RiUserAddLine } from "react-icons/ri";
+import { TbFlag3 } from "react-icons/tb";
+import useGetUserAccountProfile from "../utils/getUserAccountProfile";
 
-function Profile() {
+function UserProfile() {
   const navigate = useNavigate();
-  const { name, username, avatar, coverImage, createdAt, bio, followers, following } = useGetCurrentUser();
-  const { userTweets, tweetsCount } = useGetUserTweets();
+  const location = useLocation()
+  const data = location.state.data
+  console.log("data: ", data)
+  // const { name, username, avatar, coverImage, createdAt, bio } = useGetOtherUser(data);
+  const { name, username, avatar, coverImage, createdAt, bio, userFollowers, userFollowedTo, isFollowed } = useGetUserAccountProfile(data)
+  const { userTweets, tweetsCount } = useGetOtherUserTweets(data);
   const [visibleDropdown, setVisibleDropdown] = useState(null);
   const [_id, set_id] = useState("")
-  const [newTweetId, setNewTweetId] = useState("")
+
   const toggleDropdown = (id) => {
     setVisibleDropdown(visibleDropdown === id ? null : id);
     set_id(id)
@@ -32,33 +42,29 @@ function Profile() {
 
   const accessToken = localStorage.getItem("accessToken")
 
-  const deleteHandler = async (e) => {
-    e.preventDefault()
+//   const deleteHandler = async (e) => {
+//     e.preventDefault()
 
-    console.log("_id : ", _id)
+//     console.log("_id : ", _id)
 
-    try {
-      const response = await axios.delete(deleteTweetServer, { 
-        data: { _id },
-        headers: {
-          'Authorization': `Bearer ${accessToken}`
-        } 
-      })
+//     try {
+//       const response = await axios.delete(deleteTweetServer, { 
+//         data: { _id },
+//         headers: {
+//           'Authorization': `Bearer ${accessToken}`
+//         } 
+//       })
 
-      console.log("response: ", response)
+//       console.log("response: ", response)
 
-      console.log("Tweet deleted successfully !!")
-      navigate(0)
-    } catch (error) {
-      console.log("Error while deleting tweet !!", error)
-    }
-  }
+//       console.log("Tweet deleted successfully !!")
+//       navigate(0)
+//     } catch (error) {
+//       console.log("Error while deleting tweet !!", error)
+//     }
+//   }
 
   const viewHandler = async(_id) => {
-    // e.preventDefault()
-    // navigate("/viewtweet", { state: { tweetId: _id } })
-
-    console.log("_id in profile:", _id)
 
     try {
       const response = await axios.get(`${getATweetServer}?newTweetId=${_id}`);
@@ -86,6 +92,25 @@ function Profile() {
 
     } catch (error) {
       console.log("Error while liking tweet !!", error)
+    }
+  }
+
+  const followHandler = async() => {
+    const token = localStorage.getItem("accessToken")
+
+    if (!token) {
+      console.log("TOKEN not found")
+    }
+    try {
+      const response = await axios.post(followServer, { username: username }, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+      })
+
+      console.log("response: ", response)
+    } catch (error) {
+      console.log("Error while following !!")
     }
   }
 
@@ -118,10 +143,10 @@ function Profile() {
           </div>
           <div className="mt-4">
             <button
-              className="border border-[#71767b] rounded-full font-bold py-2 px-3 hover:bg-[#202327]"
-              onClick={() => navigate("/editprofile")}
+              className={`border border-[#71767b rounded-full font-bold py-2 px-4 ${isFollowed ? "" : "bg-white text-black hover:bg-[#dfdfdf]"} `}
+              onClick={followHandler}
             >
-              Edit Profile
+                {isFollowed ? "Following" : "Follow"}
             </button>
           </div>
         </div>
@@ -139,10 +164,10 @@ function Profile() {
           </div>
           <div className="flex text-sm gap-4 mt-2">
             <p className="text-[#71767b]  md:text-base text-sm">
-              <span className="font-bold text-white">{following}</span> Following
+              <span className="font-bold text-white">{userFollowedTo}</span> Following
             </p>
             <p className="text-[#71767b]  md:text-base text-sm">
-              <span className="font-bold text-white">{followers}</span> Followers
+              <span className="font-bold text-white">{userFollowers}</span> Followers
             </p>
           </div>
         </div>
@@ -193,17 +218,21 @@ function Profile() {
                   <>
                   <div className="absolute right-[32%] border border-[#71767b] bg-black rounded-lg overflow-hidden mt-2">
                     <div 
-                    className="flex items-center gap-3 text-sm hover:bg-[#202327] p-2 text-[#f4212e] font-bold cursor-pointer"
-                    onClick={deleteHandler}
+                    className="flex items-center gap-3 text-sm hover:bg-[#202327] p-2 text-white font-bold cursor-pointer"
                     >
-                      <RiDeleteBin5Fill 
+                      <RiUserAddLine
                       />
-                      <p>Delete</p>
+                      <p>Follow @{username}</p>
                     </div>
                     <div className="flex items-center gap-3 text-sm hover:bg-[#202327] p-2 text-white font-bold cursor-pointer">
-                      <BsPin 
+                      <BiVolumeMute 
                       />
-                      <p>Pin to your profile</p>
+                      <p>Mute @{username}</p>
+                    </div>
+                    <div className="flex items-center gap-3 text-sm hover:bg-[#202327] p-2 text-white font-bold cursor-pointer">
+                      <TbFlag3 
+                      />
+                      <p>Report Post</p>
                     </div>
                   </div>
                   </>
@@ -253,4 +282,4 @@ function Profile() {
   );
 }
 
-export default Profile;
+export default UserProfile;
