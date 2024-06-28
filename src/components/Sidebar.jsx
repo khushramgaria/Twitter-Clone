@@ -6,32 +6,31 @@ import {
   IoPeopleOutline,
   IoPersonOutline,
 } from "react-icons/io5";
-import { LuClipboardList } from "react-icons/lu";
 import { FaXTwitter } from "react-icons/fa6";
 import { CgMoreO } from "react-icons/cg";
-import profileimg from "../assets/profile.jpg";
 import useGetCurrentUser from "../utils/getCurrentUser";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import Input from "./Input";
+import { Link, useNavigate } from "react-router-dom";
 import { BsPencilSquare } from "react-icons/bs";
 import axios from "axios";
 import { logoutServer } from "../utils/server";
+import GrokIcon from "../assets/GrokIcon";
+import { IoSettingsOutline } from "react-icons/io5";
 
 function Sidebar() {
   const { name, username, avatar } = useGetCurrentUser();
   const [isVisibleDropdown, setIsVisibleDropdown] = useState(false)
+  const [showMore, setShowMore] = useState(false)
   const navigate = useNavigate()
   const navigator = [
     { icon: <GoHomeFill />, name: "Home", link: "/home"},
-    { icon: <FaSearch />, name: "Explore" },
-    { icon: <FaRegBell />, name: "Notifications" },
-    { icon: <IoMailOutline />, name: "Messages" },
-    { icon: <LuClipboardList />, name: "Lists" },
-    { icon: <FaRegBookmark />, name: "Bookmarks" },
-    { icon: <IoPeopleOutline />, name: "Communities" },
-    { icon: <FaXTwitter />, name: "Permium" },
+    { icon: <FaSearch />, name: "Explore", link: "/explore" },
+    { icon: <FaRegBell />, name: "Notifications", link: "/notification" },
+    { icon: <IoMailOutline />, name: "Messages", link: "/message" },
+    { icon: <GrokIcon />, name: "Grok", link: "/grok" },
+    { icon: <FaRegBookmark />, name: "Bookmarks", link: "/bookmark" },
+    { icon: <IoPeopleOutline />, name: "Communities", link: "/communities" },
+    // { icon: <FaXTwitter />, name: "Premium", link: "/premium" },
     { icon: <IoPersonOutline />, name: "Profile", link: "/profile" },
-    { icon: <CgMoreO />, name: "More" },
   ];
 
   const logoutHandler = async() => {
@@ -78,6 +77,25 @@ function Sidebar() {
                     </li>
                 </Link>
             ))}
+            <li
+              className="md:flex flex justify-center md:justify-start md:gap-3 items-center cursor-pointer md:w-fit hover:bg-[#202327] hover:rounded-xl px-3 py-1"
+              onClick={() => setShowMore(!showMore)}
+              >
+              <CgMoreO />
+              <span className="hidden md:block">More</span>
+              {showMore &&
+                <div className="absolute md:bottom-44 md:left-32 left-14 bottom-14 rounded-xl bg-black border border-[#71767b] py-3 w-[685%] md:w-[70%] font-bold">
+                  <div className="flex items-center py-3 px-6 hover:bg-[#202327] cursor-pointer gap-2" onClick={() => navigate("/premium")}>
+                    <FaXTwitter />
+                    <p className="text-base">Premium</p>
+                  </div>
+                  <div className="flex items-center py-3 px-6 hover:bg-[#202327] cursor-pointer gap-2">
+                    <IoSettingsOutline className="text-xl" />
+                    <p className="text-base">Settings and privacy</p>
+                  </div>
+                </div>
+                }
+            </li>
             <li>
               <label htmlFor="post" className="md:bg-[#1d9bf0] rounded-3xl flex w-full justify-center md:py-2 font-bold text-base md:hover:bg-[#048de8] cursor-pointer mt-2 mb-6" onClick={() => navigate("/tweet")}>
                 <span className="hidden md:block">Post</span>
@@ -102,7 +120,7 @@ function Sidebar() {
                 <CgMoreO />
               </div>
               {isVisibleDropdown &&
-              <div className="absolute bottom-14 left-32 rounded-xl bg-black border border-[#71767b] py-3 w-[70%] ">
+              <div className="absolute md:bottom-14 md:left-32 top-100 left-14 rounded-xl bg-black border border-[#71767b] py-3 w-[750%] md:w-[70%] ">
                 <p 
                 className="py-3 px-6 text-base hover:bg-[#202327] cursor-pointer"
                 >

@@ -17,8 +17,18 @@ function Register() {
     const [password, setPassword] = useState("")
     const [username, setUsername] = useState("")
 
+    const [error, setError] = useState("")
+
     const goToPassHandler = (e) => {
         e.preventDefault()
+        if(name.trim() === ""|| email.trim() === "" || !dob) {
+            setError("All Fields are required !!")
+            return
+        }
+        if(!email.includes("@")) {
+            setError("Please provide correct email")
+            return
+        }
         setBasicDetailComp(false)
         setPasswordComp(true)
         setUsernameComp(false)
@@ -26,6 +36,14 @@ function Register() {
 
     const goToUsernameHandler = (e) => {
         e.preventDefault()
+        if(password.trim() === "") {
+            setError("Password is required !!")
+            return
+        }
+        if (password.length < 8) {
+            setError("Password should be 8 character or more !!")
+            return
+        }
         setBasicDetailComp(false)
         setPasswordComp(false)
         setUsernameComp(true)
@@ -47,23 +65,33 @@ function Register() {
     }
 
     const onChangeName = (value) => {
+        setError("")
         setName(value)
     }
     const onChangeEmail = (value) => {
+        setError("")
         setEmail(value)
     }
     const onChangeDob = (value) => {
+        setError("")
         setDob(value)
     }
     const onChangePassword = (value) => {
+        setError("")
         setPassword(value)
     }
     const onChangeUsername = (value) => {
+        setError("")
         setUsername(value)
     }
 
     const registerHandler = async (e) => {
         e.preventDefault()
+        setError("")
+        if (username.trim() === "") {
+            setError("Username is required !!")
+            return
+        }
         try {
             const response = await axios.post(registerServer, {
                 fullName: name,
@@ -86,6 +114,7 @@ function Register() {
             navigate("/login")
         } catch (error) {
             console.log("Error while registering user !!", error)
+            setError("Error while registering user. try later !!")
         }
     }
   return (
@@ -120,6 +149,9 @@ function Register() {
                 <Input type="date" onChange={onChangeDob} value={dob} />
                 {/* pattern="\d{4}-\d{2}-\d{2}" */}
             </div>
+            <div>
+                <p className='text-red-500 mt-2 text-sm'>{error}</p>
+            </div>
             <div className='mt-4 pt-4'>
                 <button className='w-full border rounded-full py-3 font-bold hover:bg-white hover:text-black' onClick={goToPassHandler}>Next</button>
             </div>
@@ -140,6 +172,9 @@ function Register() {
             </div>
             <div>
                 <Input type="password" name="Password" onChange={onChangePassword} value={password} />
+            </div>
+            <div>
+                <p className='text-red-500 mt-2 text-sm'>{error}</p>
             </div>
             <div className='mt-24'>
                 <p className=' text-gray-500 text-[11.5px] py-5'>By signing up, you agree to the <span className='text-[#1d9bf0]'>Terms of Service</span> and <span className='text-[#1d9bf0]'>Privacy Policy</span>, including <span className='text-[#1d9bf0]'>Cookie Use</span>. X may use your contact information, including your email address and phone number for purposes outlined in our Privacy Policy, like keeping your account secure and personalizing our services, including ads. <span className='text-[#1d9bf0]'>Learn more</span>. Others will be able to find you by email or phone number, when provided, unless you choose otherwise <span className='text-[#1d9bf0]'>here</span>.
@@ -166,6 +201,9 @@ function Register() {
             </div>
             <div>
                 <Input type="text" name="@Username" onChange={onChangeUsername} value={username} />
+            </div>
+            <div>
+                <p className='text-red-500 mt-2 text-sm'>{error}</p>
             </div>
             <div className='mt-36'>
                 <button 

@@ -8,6 +8,13 @@ import EditProfile from "./pages/EditProfile"
 import Tweet from "./pages/Tweet"
 import ViewTweet from "./pages/ViewTweet"
 import UserProfile from "./pages/UserProfile"
+import Explore from "./pages/Explore"
+import Notifications from "./pages/Notifications"
+import Messages from "./pages/Messages"
+import Grok from "./pages/Grok"
+import Bookmark from "./pages/Bookmark"
+import Communities from "./pages/Communities"
+import Premium from "./pages/Premium"
 
 function App() {
 
@@ -23,6 +30,13 @@ function App() {
           <Route path="/tweet" element={<Tweet/>} />
           <Route path="/viewtweet" element={<ViewTweet/>} />
           <Route path="/getotheruser" element={<UserProfile/>} />
+          <Route path="/explore" element={<Explore/>} />
+          <Route path="/notification" element={<Notifications/>} />
+          <Route path="/message" element={<Messages/>} />
+          <Route path="/grok" element={<Grok/>} />
+          <Route path="/bookmark" element={<Bookmark/>} />
+          <Route path="/communities" element={<Communities/>} />
+          <Route path="/premium" element={<Premium/>} />
         </Routes>
       </div>
     </>

@@ -1,8 +1,10 @@
 import React from 'react'
 import { FaSearch } from "react-icons/fa";
 import { CgMoreO } from "react-icons/cg";
+import { useNavigate } from 'react-router-dom';
 
 function News() {
+    const navigate = useNavigate()
     const news = [
         {
             trend: "Politics . Trend",
@@ -35,7 +37,7 @@ function News() {
         <div className="subscribe w-[70%] border border-[#71767b] mx-2 my-3 ml-5 rounded-xl p-2 pr-5">
             <h6 className='font-bold'>Subscribe to Premium</h6>
             <p className='text-xs text-justify my-2'>Subscribe to unlock new features and if eligible, receive a share of ads revenue.</p>
-            <button className='bg-[#1d9bf0] hover:bg-[#048de8] text-sm font-bold py-1 px-4 rounded-full mt-1'>Subscribe</button>
+            <button className='bg-[#1d9bf0] hover:bg-[#048de8] text-sm font-bold py-1 px-4 rounded-full mt-1' onClick={() => navigate("/premium")}>Subscribe</button>
         </div>
         <div className=" w-[70%] popular border border-[#71767b] ml-5 rounded-xl py-2 px-3">
             <h6 className="font-bold ">What’s happening</h6>

@@ -1,4 +1,4 @@
-import React, {useState } from "react";
+import React, {useState, useEffect } from "react";
 import Wrapper from "../components/Wrapper";
 import { IoArrowBack } from "react-icons/io5";
 import { PiCalendarMinusDuotone } from "react-icons/pi";
@@ -15,9 +15,8 @@ import { IoHeartOutline } from "react-icons/io5";
 import { IoHeartSharp } from "react-icons/io5";
 import { RiDeleteBin5Fill } from "react-icons/ri";
 import { BsPin } from "react-icons/bs";
-import { deleteTweetServer, followServer, getATweetServer, likeTweetServer } from "../utils/server";
+import { followServer, getATweetServer, likeTweetServer } from "../utils/server";
 import axios from "axios";
-import useGetOtherUser from "../utils/getOtherUser";
 import useGetOtherUserTweets from "../utils/getOtherUserTweets";
 import { BiVolumeMute } from "react-icons/bi";
 import { RiUserAddLine } from "react-icons/ri";
@@ -29,40 +28,27 @@ function UserProfile() {
   const location = useLocation()
   const data = location.state.data
   console.log("data: ", data)
-  // const { name, username, avatar, coverImage, createdAt, bio } = useGetOtherUser(data);
   const { name, username, avatar, coverImage, createdAt, bio, userFollowers, userFollowedTo, isFollowed } = useGetUserAccountProfile(data)
-  const { userTweets, tweetsCount } = useGetOtherUserTweets(data);
+  const { userTweets: initialTweets, tweetsCount } = useGetOtherUserTweets(data);
+  const [userTweets, setUserTweets] = useState(initialTweets);
   const [visibleDropdown, setVisibleDropdown] = useState(null);
   const [_id, set_id] = useState("")
 
+
+  console.log(userTweets)
+
+  useEffect(() => {
+    if (initialTweets && initialTweets.length > 0) {
+      setUserTweets(initialTweets);
+    }
+  }, [initialTweets]);
+  
   const toggleDropdown = (id) => {
     setVisibleDropdown(visibleDropdown === id ? null : id);
     set_id(id)
   };
 
   const accessToken = localStorage.getItem("accessToken")
-
-//   const deleteHandler = async (e) => {
-//     e.preventDefault()
-
-//     console.log("_id : ", _id)
-
-//     try {
-//       const response = await axios.delete(deleteTweetServer, { 
-//         data: { _id },
-//         headers: {
-//           'Authorization': `Bearer ${accessToken}`
-//         } 
-//       })
-
-//       console.log("response: ", response)
-
-//       console.log("Tweet deleted successfully !!")
-//       navigate(0)
-//     } catch (error) {
-//       console.log("Error while deleting tweet !!", error)
-//     }
-//   }
 
   const viewHandler = async(_id) => {
 
@@ -90,6 +76,18 @@ function UserProfile() {
 
       console.log("like response: ", response)
 
+      setUserTweets((prevTweets) =>
+        prevTweets.map((tweet) =>
+          tweet._id === tweetId
+            ? {
+                ...tweet,
+                isLiked: !tweet.isLiked,
+                likesCount: tweet.isLiked ? tweet.likesCount - 1 : tweet.likesCount + 1,
+              }
+            : tweet
+        )
+      );
+
     } catch (error) {
       console.log("Error while liking tweet !!", error)
     }
@@ -108,7 +106,8 @@ function UserProfile() {
         },
       })
 
-      console.log("response: ", response)
+      console.log("response: ", response);
+
     } catch (error) {
       console.log("Error while following !!")
     }
@@ -138,19 +137,19 @@ function UserProfile() {
           <div className="">
             <img
               src={avatar}
-              className="absolute md:top-48 top-52 object-cover w-20 h-20 md:w-36 md:h-36 rounded-full border-4 border-black"
+              className="absolute md:top-48 top-56 object-cover w-24 h-2w-24 md:w-36 md:h-36 rounded-full border-4 border-black"
             />
           </div>
           <div className="mt-4">
             <button
-              className={`border border-[#71767b rounded-full font-bold py-2 px-4 ${isFollowed ? "" : "bg-white text-black hover:bg-[#dfdfdf]"} `}
+              className={`border border-[#71767b] text-xs md:text-base rounded-full font-bold py-2 px-4 ${isFollowed ? "" : "bg-white text-black hover:bg-[#dfdfdf]"} `}
               onClick={followHandler}
             >
-                {isFollowed ? "Following" : "Follow"}
+                {isFollowed ? "Following" : "Follow" }
             </button>
           </div>
         </div>
-        <div className="px-5 mt-10">
+        <div className="px-5 md:mt-10 mt-8">
           <div>
             <h1 className="text-xl font-bold">{name}</h1>
             <p className="text-sm text-[#71767b]">@{username}</p>

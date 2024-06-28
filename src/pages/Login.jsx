@@ -18,11 +18,17 @@ function Login() {
 
     const goBackHandler = (e) => {
         e.preventDefault()
+        setError("")
         setUserIdComp(true)
         setPasswordComp(false)
     }
     const goToPassHandler = (e) => {
         e.preventDefault()
+        if (userId.trim() === "") {
+            setError("Please enter valid email or username !!")
+            return
+        }
+        setError("")
         setUserIdComp(false)
         setPasswordComp(true)
     }
@@ -42,6 +48,7 @@ function Login() {
     const loginHandler = async(e) => {
         e.preventDefault()
         setLoggingIn(true)
+        setError("")
 
         try {
             const response = await axios.post(loginServer, {
@@ -66,6 +73,8 @@ function Login() {
               }
         } catch (error) {
             console.log("Error while logging in user !!", error)
+            setError("Login Failed. Try Later !!")
+            setLoggingIn(false)
         }
 
     }
@@ -98,6 +107,9 @@ function Login() {
             </div>
             <div>
                 <Input type="text" name="email address, or username" onChange={onChangeUserId} />
+            </div>
+            <div>
+                <p className='text-red-500 mt-2 text-sm'>{error}</p>
             </div>
             <div className='mt-4 pt-4'>
                 <button 

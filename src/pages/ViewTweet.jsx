@@ -15,6 +15,7 @@ import useGetAllComments from "../utils/getAllComments";
 import { likeTweetServer } from "../utils/server";
 import { IoHeartOutline } from "react-icons/io5";
 import { IoHeartSharp } from "react-icons/io5";
+import axios from "axios";
 
 function ViewTweet () {
   const location = useLocation();
@@ -25,7 +26,7 @@ function ViewTweet () {
 
   console.log("data in view tweet: ", data);
 
-  // console.log("commments in view tweet: ", allComments.totalComments[0].commentsCount)
+  console.log("commments in view tweet: ", allComments)
 
   const likeHandler = async(tweetId) => {
     console.log("tweetId in profile likehandler: ", tweetId)
@@ -106,7 +107,7 @@ function ViewTweet () {
             </div>
             <BiRepost className="cursor-pointer text-[#71767b] text-lg" />
             <div className="flex gap-1 text-[#71767b]">
-              <IoHeartOutline className="cursor-pointer text-[#71767b] text-lg" onClick={() => likeHandler(post._id)} />
+              <IoHeartOutline className="cursor-pointer text-[#71767b] text-lg" onClick={() => likeHandler(data._id)} />
               <small className="mt-[-3px]">{data.likesCount === 0 ? "" : data.likesCount}</small>
             </div>
             <CgInsights className="cursor-pointer text-[#71767b] text-lg" />
@@ -119,8 +120,8 @@ function ViewTweet () {
       </div>
       <PublishTweet tweetId={data._id}  />
 
-      {Array.isArray(allComments.comments) && allComments.comments.length > 0 ? (
-          allComments.comments.map((comment) => (
+      {Array.isArray(allComments) && allComments.length > 0 ? (
+          allComments.map((comment) => (
             <div key={comment._id} className="post border-b border-[#71767b] px-5 pb-3">
         <div className="flex justify-between items-center py-1 my-2">
           <div className="flex gap-2">

@@ -1,4 +1,4 @@
-import React, {useState } from "react";
+import React, {useEffect, useState } from "react";
 import Wrapper from "../components/Wrapper";
 import { IoArrowBack } from "react-icons/io5";
 import { PiCalendarMinusDuotone } from "react-icons/pi";
@@ -21,10 +21,15 @@ import axios from "axios";
 function Profile() {
   const navigate = useNavigate();
   const { name, username, avatar, coverImage, createdAt, bio, followers, following } = useGetCurrentUser();
-  const { userTweets, tweetsCount } = useGetUserTweets();
+  const { userTweets: initialTweets, tweetsCount } = useGetUserTweets();
+  const [ userTweets, setUserTweets] = useState(initialTweets)
   const [visibleDropdown, setVisibleDropdown] = useState(null);
   const [_id, set_id] = useState("")
-  const [newTweetId, setNewTweetId] = useState("")
+
+  useEffect(() => {
+    setUserTweets(initialTweets)
+  }, [initialTweets])
+
   const toggleDropdown = (id) => {
     setVisibleDropdown(visibleDropdown === id ? null : id);
     set_id(id)
@@ -48,6 +53,7 @@ function Profile() {
       console.log("response: ", response)
 
       console.log("Tweet deleted successfully !!")
+      setUserTweets(userTweets.filter((tweet) => tweet._id !== _id))
       navigate(0)
     } catch (error) {
       console.log("Error while deleting tweet !!", error)
@@ -55,13 +61,15 @@ function Profile() {
   }
 
   const viewHandler = async(_id) => {
-    // e.preventDefault()
-    // navigate("/viewtweet", { state: { tweetId: _id } })
-
-    console.log("_id in profile:", _id)
 
     try {
       const response = await axios.get(`${getATweetServer}?newTweetId=${_id}`);
+
+      // const response = await axios.get(getATweetServer, { tweetId: _id }, {
+      //   headers: {
+      //     Authorization: `Bearer ${accessToken}`
+      //   }
+      // })
 
       console.log("response: ", response.data.data[0])
 
@@ -83,6 +91,16 @@ function Profile() {
       })
 
       console.log("like response: ", response)
+
+      setUserTweets(
+        userTweets.map((tweet) => 
+          tweet._id === tweetId
+          ?
+          {...tweet, isLiked: !tweet.isLiked, likesCount: tweet.isLiked ? tweet.likesCount - 1 : tweet.likesCount + 1} 
+          :
+          tweet
+        )
+      )
 
     } catch (error) {
       console.log("Error while liking tweet !!", error)
@@ -113,19 +131,19 @@ function Profile() {
           <div className="">
             <img
               src={avatar}
-              className="absolute md:top-48 top-52 object-cover w-20 h-20 md:w-36 md:h-36 rounded-full border-4 border-black"
+              className="absolute md:top-48 top-56 object-cover w-24 h-2w-24 md:w-36 md:h-36 rounded-full border-4 border-black"
             />
           </div>
           <div className="mt-4">
             <button
-              className="border border-[#71767b] rounded-full font-bold py-2 px-3 hover:bg-[#202327]"
+              className="border border-[#71767b] text-xs md:text-base rounded-full font-bold py-2 px-3 hover:bg-[#202327]"
               onClick={() => navigate("/editprofile")}
             >
               Edit Profile
             </button>
           </div>
         </div>
-        <div className="px-5 mt-10">
+        <div className="px-5 md:mt-10 mt-8">
           <div>
             <h1 className="text-xl font-bold">{name}</h1>
             <p className="text-sm text-[#71767b]">@{username}</p>
@@ -173,7 +191,7 @@ function Profile() {
               <div className="flex justify-between items-center py-1 my-2">
                 <div className="flex gap-2">
                   <div className="img">
-                    <img src={avatar} className="w-8 h-8 rounded-full" />
+                    <img src={avatar} className="w-8 md:h-8 rounded-full" />
                   </div>
                   <div className="content">
                     <p className="text-xs">

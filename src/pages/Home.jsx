@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Wrapper from "../components/Wrapper";
 import { CgMoreO } from "react-icons/cg";
 import { RiShare2Line } from "react-icons/ri";
@@ -19,151 +19,17 @@ import { BiVolumeMute } from "react-icons/bi";
 import { RiUserAddLine } from "react-icons/ri";
 import { TbFlag3 } from "react-icons/tb";
 import { CgProfile } from "react-icons/cg";
+import AllTweets from "../components/AllTweets";
 
 function Home() {
-  const navigate = useNavigate()
-  const { allTweets } = useGetAllTweets()
-
-  const [visibleDropdown, setVisibleDropdown] = useState(null);
-
-  const toggleDropdown = (id) => {
-    setVisibleDropdown(visibleDropdown === id ? null : id);
-  };
-
-
-  const viewHandler = async(_id) => {
-    try {
-      const response = await axios.get(`${getATweetServer}?newTweetId=${_id}`);
-
-      console.log("response: ", response.data.data[0])
-
-      navigate("/viewtweet", { state: { data: response.data.data[0] }})
-
-    } catch (error) {
-      console.log("Error while getting tweet !!", error)
-    }
-  }
-
-  const likeHandler = async(tweetId) => {
-    console.log("tweetId in profile likehandler: ", tweetId)
-
-    try {
-      const response = await axios.post(likeTweetServer, { tweetId }, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem("accessToken")}`
-        }
-      })
-
-      console.log("like response: ", response)
-    } catch (error) {
-      console.log("Error while liking tweet !!", error)
-    }
-  }
+  
 
   return (
     <>
       <Wrapper>
         <PublishTweet />
 
-        {Array.isArray(allTweets) && allTweets.length > 0 ? (
-          allTweets.map((tweet) => (
-            <div
-              key={tweet._id}
-              className="post border-b border-[#71767b] px-5 pb-3"
-            >
-              <div className="flex justify-between items-center py-1 my-2">
-                <div className="flex gap-2">
-                  <div className="img">
-                    <img 
-                    src={tweet.userDetails.avatar} className="w-8 h-8 rounded-full cursor-pointer" 
-                    onClick={() => navigate("/getotheruser", { state: { data: tweet.userDetails.username }})} 
-                    />
-                  </div>
-                  <div className="content">
-                    <p className="text-xs" onClick={() => navigate("/getotheruser", { state: { data: tweet.userDetails.username }})} >
-                      {tweet.userDetails.fullName}{" "}
-                      <span className="text-slate-600">
-                        @{tweet.userDetails.username} . {tweet.createdAt}
-                      </span>
-                    </p>
-                    <p className="text-[11px] pt-1 cursor-pointer" onClick={() => viewHandler(tweet._id)}>{tweet.description}</p>
-                  </div>
-                </div>
-                <div className="icon cursor-pointer hover:text-[#1d9bf0]">
-                  <CgMoreO 
-                  onClick={() => toggleDropdown(tweet._id)}
-                  />
-                  {visibleDropdown === tweet._id && 
-                  <>
-                  <div className="absolute right-[32%] border border-[#71767b] bg-black rounded-lg overflow-hidden mt-2">
-                  <div 
-                    className="flex items-center gap-3 text-sm hover:bg-[#202327] p-2 text-white font-bold cursor-pointer"
-                    onClick={() => navigate("/getotheruser", { state: { data: tweet.userDetails.username }})} 
-                    >
-                      <CgProfile
-                      />
-                      <p>View @{tweet.userDetails.username}</p>
-                    </div>
-                    <div 
-                    className="flex items-center gap-3 text-sm hover:bg-[#202327] p-2 text-white font-bold cursor-pointer"
-                    >
-                      <RiUserAddLine
-                      />
-                      <p>Follow @{tweet.userDetails.username}</p>
-                    </div>
-                    <div className="flex items-center gap-3 text-sm hover:bg-[#202327] p-2 text-white font-bold cursor-pointer">
-                      <BiVolumeMute 
-                      />
-                      <p>Mute @{tweet.userDetails.username}</p>
-                    </div>
-                    <div className="flex items-center gap-3 text-sm hover:bg-[#202327] p-2 text-white font-bold cursor-pointer">
-                      <TbFlag3 
-                      />
-                      <p>Report Post</p>
-                    </div>
-                  </div>
-                  </>
-                  }
-                </div>
-              </div>
-              <div>
-                {/* <div className="text-justify px-10 text-xs">{post.bio}</div> */}
-              </div>
-              <div className="ml-9">
-                <img src={tweet.media} className="rounded-3xl my-3 mb-4 w-52 cursor-pointer" onClick={() => viewHandler(tweet._id)} />
-              </div>
-              <div className="flex">
-              <div className="flex justify-between text-base pl-7 pr-2 w-full">
-                <div className="flex gap-1 text-[#71767b]">
-                  <FaRegComment className="cursor-pointer text-[#71767b]" onClick={() => viewHandler(tweet._id)}  />
-                  <small className="mt-[-4px]">{tweet.commentsCount === 0 ? "" : tweet.commentsCount}</small>
-                </div>
-                <BiRepost className="cursor-pointer text-[#71767b] text-lg" />
-                <div className="flex gap-1 text-[#71767b]">
-                  {tweet.isLiked ? (
-                    <>
-                    <IoHeartSharp className="cursor-pointer text-red-500 text-lg" onClick={() => likeHandler(tweet._id)} />
-                    <small className="mt-[-3px]">{tweet.likesCount === 0 ? "" : tweet.likesCount}</small>
-                    </>
-                  ) : (
-                    <>
-                    <IoHeartOutline className="cursor-pointer text-[#71767b] text-lg" onClick={() => likeHandler(tweet._id)} />
-                    <small className="mt-[-3px]">{tweet.likesCount === 0 ? "" : tweet.likesCount}</small>
-                    </>
-                  )}
-                </div>
-                <CgInsights className="cursor-pointer text-[#71767b] text-lg" />
-                <CiBookmark className="cursor-pointer text-[#71767b] text-lg" />
-              </div>
-              <div className="text-xs">
-                <RiShare2Line className="cursor-pointer text-[#71767b] text-lg" />
-              </div>
-            </div>
-            </div>
-          ))
-        ) : (
-          <div>No tweets available</div>
-        )}
+        <AllTweets />
       </Wrapper>
     </>
   );
