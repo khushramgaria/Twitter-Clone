@@ -15,6 +15,7 @@ const useGetCurrentUser = () => {
     const [followers, setFollowers] = useState();
     const [following, setFollowing] = useState();
     const [loading, setLoading] = useState(true);
+    const [followingUserDetails, setFollowingUserDetails] = useState()
 
     const accessToken = localStorage.getItem("accessToken")
 
@@ -39,6 +40,7 @@ const useGetCurrentUser = () => {
                 setWebsite(response.data.data[0].website)
                 setFollowers(response.data.data[0].followersCount)
                 setFollowing(response.data.data[0].channelFollowedToCount)
+                setFollowingUserDetails(response.data.data[0].followedTo)
                 setLoading(false)
             } catch (error) {
                 console.log("Error fetching user bcoz of invalid access token")
@@ -48,7 +50,7 @@ const useGetCurrentUser = () => {
         fetchUser()
     }, [accessToken])
 
-    return { name, username, email, avatar, coverImage, createdAt, bio, website, location, loading, followers, following }
+    return { name, username, email, avatar, coverImage, createdAt, bio, website, location, loading, followers, following, followingUserDetails }
 }
 
 export default useGetCurrentUser

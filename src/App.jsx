@@ -15,6 +15,7 @@ import Grok from "./pages/Grok"
 import Bookmark from "./pages/Bookmark"
 import Communities from "./pages/Communities"
 import Premium from "./pages/Premium"
+import ChatSection from "./components/ChatSection"
 
 function App() {
 
@@ -37,6 +38,7 @@ function App() {
           <Route path="/bookmark" element={<Bookmark/>} />
           <Route path="/communities" element={<Communities/>} />
           <Route path="/premium" element={<Premium/>} />
+          <Route path="/chatsection" element={<ChatSection/>} />
         </Routes>
       </div>
     </>
