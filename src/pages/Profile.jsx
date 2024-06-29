@@ -15,7 +15,7 @@ import { IoHeartOutline } from "react-icons/io5";
 import { IoHeartSharp } from "react-icons/io5";
 import { RiDeleteBin5Fill } from "react-icons/ri";
 import { BsPin } from "react-icons/bs";
-import { deleteTweetServer, getATweetServer, likeTweetServer } from "../utils/server";
+import { deleteTweetServer, getATweetServer, likeTweetServer, retweetServer } from "../utils/server";
 import axios from "axios";
 
 function Profile() {
@@ -94,9 +94,9 @@ function Profile() {
 
       setUserTweets(
         userTweets.map((tweet) => 
-          tweet._id === tweetId
+          (tweet._id || tweet.tweet?._id) === tweetId
           ?
-          {...tweet, isLiked: !tweet.isLiked, likesCount: tweet.isLiked ? tweet.likesCount - 1 : tweet.likesCount + 1} 
+          {...tweet, isLiked: !tweet.isLiked , likesCount: tweet.isLiked ? tweet.likesCount - 1 : tweet.likesCount + 1} 
           :
           tweet
         )
@@ -104,6 +104,20 @@ function Profile() {
 
     } catch (error) {
       console.log("Error while liking tweet !!", error)
+    }
+  }
+
+  const retweetHandler = async(tweetId) => {
+    try {
+      const response = await axios.post(retweetServer, { tweetId }, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem("accessToken")}`
+        }
+      })
+
+      console.log(response)
+    } catch (error) {
+      console.log("Error while retweet tweet !!", error)
     }
   }
 
@@ -185,29 +199,35 @@ function Profile() {
         {Array.isArray(userTweets) && userTweets.length > 0 ? (
           userTweets.map((post) => (
             <div
-              key={post._id}
+              key={post._id || post.retweetId}
               className="post border-b border-[#71767b] px-5 pb-3"
             >
+              {(post.isRetweet && post.user) && (
+                <div className="flex items-center gap-1 mt-2 ml-3 text-[#71767b]">
+                  <BiRepost />
+                  <small>You retweeted</small>
+                </div>
+              )}
               <div className="flex justify-between items-center py-1 my-2">
                 <div className="flex gap-2">
                   <div className="img">
-                    <img src={avatar} className="w-8 md:h-8 rounded-full" />
+                    <img src={post.user ? post.user[0].avatar : avatar} className="w-8 md:h-8 rounded-full" />
                   </div>
                   <div className="content">
                     <p className="text-xs">
-                      {name}{" "}
+                      {post.user ? post.user[0].fullName : name}{" "}
                       <span className="text-slate-600">
-                        @{username} . {post.createdAt}
+                        @{post.user ? post.user[0].username : username} . {post.createdAt || post.retweetedAt}
                       </span>
                     </p>
-                    <p className="text-[11px] pt-1 cursor-pointer" onClick={() => viewHandler(post._id)}>{post.description}</p>
+                    <p className="text-[11px] pt-1 cursor-pointer" onClick={() => viewHandler(post._id || post.tweet?._id)}>{post.description || post.tweet.description}</p>
                   </div>
                 </div>
                 <div className="icon cursor-pointer hover:text-[#1d9bf0]">
                   <CgMoreO 
-                  onClick={() => toggleDropdown(post._id)}
+                  onClick={() => toggleDropdown(post._id || post.tweet?._id)}
                   />
-                  {visibleDropdown === post._id && 
+                  {visibleDropdown === (post._id || post.tweet?._id) && 
                   <>
                   <div className="absolute right-[32%] border border-[#71767b] bg-black rounded-lg overflow-hidden mt-2">
                     <div 
@@ -232,25 +252,31 @@ function Profile() {
                 {/* <div className="text-justify px-10 text-xs">{post.bio}</div> */}
               </div>
               <div className="ml-9">
-                <img src={post.media} className="rounded-3xl my-3 mb-4 w-52 cursor-pointer" onClick={() => viewHandler(post._id)} />
+                <img src={post.media || post.tweet?.media} className="rounded-3xl my-3 mb-4 w-52 cursor-pointer" onClick={() => viewHandler(post._id || post.tweet?._id)} />
               </div>
               <div className="flex">
               <div className="flex justify-between text-base pl-7 pr-2 w-full">
                 <div className="flex gap-1 text-[#71767b]">
-                  <FaRegComment className="cursor-pointer text-[#71767b]" onClick={() => viewHandler(post._id)} />
-                  <small className="mt-[-4px]">{post.commentsCount === 0 ? "" : post.commentsCount}</small>
+                  <FaRegComment className="cursor-pointer text-[#71767b]" onClick={() => viewHandler(post._id || post.tweet?._id)} />
+                  <small className="mt-[-4px]">{(post.commentsCount === 0 ? "" : post.commentsCount) || (post.tweet?.commentsCount === 0 ? "" : post.tweet?.commentsCount)}</small>
                 </div>
-                <BiRepost className="cursor-pointer text-[#71767b] text-lg" />
                 <div className="flex gap-1 text-[#71767b]">
-                {post.isLiked ? (
+                  <BiRepost 
+                  className={`cursor-pointer text-lg ${post.isRetweet ? "text-green-600" : "text-[#71767b]"}`} 
+                  onClick={() => retweetHandler(post._id || post.tweet?._id)}
+                  />
+                  <small className="mt-[-4px]">{(post.retweetsCount === 0 ? "" : post.retweetsCount) || (post.tweet?.retweetsCount === 0 ? "" : post.tweet?.retweetsCount)}</small>
+                </div>
+                <div className="flex gap-1 text-[#71767b]">
+                {post.isLiked || post.tweet?.isLiked ? (
                     <>
-                    <IoHeartSharp className="cursor-pointer text-red-500 text-lg" onClick={() => likeHandler(post._id)} />
-                    <small className="mt-[-3px]">{post.likesCount === 0 ? "" : post.likesCount}</small>
+                    <IoHeartSharp className="cursor-pointer text-red-500 text-lg" onClick={() => likeHandler(post._id || post.tweet?._id)} />
+                    <small className="mt-[-3px]">{(post.likesCount === 0 ? "" : post.likesCount) || (post.tweet?.likesCount === 0 ? "" : post.tweet?.likesCount)}</small>
                     </>
                   ) : (
                     <>
-                    <IoHeartOutline className="cursor-pointer text-[#71767b] text-lg" onClick={() => likeHandler(post._id)} />
-                    <small className="mt-[-3px]">{post.likesCount === 0 ? "" : post.likesCount}</small>
+                    <IoHeartOutline className="cursor-pointer text-[#71767b] text-lg" onClick={() => likeHandler(post._id || post.tweet?._id)} />
+                    <small className="mt-[-3px]">{(post.likesCount === 0 ? "" : post.likesCount) || (post.tweet?.likesCount === 0 ? "" : post.tweet?.likesCount)}</small>
                     </>
                   )}
                 </div>

@@ -53,3 +53,15 @@ export const likeTweetServer = `${server}/likes/like-tweet`
 //followers server
 
 export const followServer = `${server}/followers/toggle-followers`
+
+
+//retweet server
+
+export const retweetServer = `${server}/retweets/retweet-post`
+
+
+//bookmark server
+
+export const bookmarkServer = `${server}/bookmarks/bookmark-post`
+
+export const getBookmarkTweetsServer = `${server}/bookmarks/bookmark-tweets`

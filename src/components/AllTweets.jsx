@@ -10,7 +10,7 @@ import { BsPin } from "react-icons/bs";
 import PublishTweet from "../components/PublishTweet";
 import useGetAllTweets from "../utils/getAllTweets";
 import { useNavigate } from "react-router-dom";
-import { getATweetServer, likeTweetServer } from "../utils/server";
+import { bookmarkServer, getATweetServer, likeTweetServer, retweetServer } from "../utils/server";
 import axios from "axios";
 import { IoHeartOutline } from "react-icons/io5";
 import { IoHeartSharp } from "react-icons/io5";
@@ -18,6 +18,8 @@ import { BiVolumeMute } from "react-icons/bi";
 import { RiUserAddLine } from "react-icons/ri";
 import { TbFlag3 } from "react-icons/tb";
 import { CgProfile } from "react-icons/cg";
+import { IoBookmark } from "react-icons/io5";
+import { IoBookmarkOutline } from "react-icons/io5";
 
 function AllTweets() {
     const navigate = useNavigate()
@@ -70,10 +72,61 @@ function AllTweets() {
                 likesCount: tweet.isLiked ? tweet.likesCount - 1 : tweet.likesCount + 1,
               }
             : tweet
-        )
+        ) 
       );
     } catch (error) {
       console.log("Error while liking tweet !!", error)
+    }
+  }
+
+  const retweetHandler = async(tweetId) => {
+    try {
+      const response = await axios.post(retweetServer, { tweetId }, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem("accessToken")}`
+        }
+      })
+
+      console.log(response)
+
+      setAllTweets(
+        allTweets.map((tweet) =>
+          tweet._id === tweetId
+            ? {
+              ...tweet,
+              isRetweet: !tweet.isRetweet,
+              retweetsCount: tweet.isRetweet ? tweet.retweetsCount - 1 : tweet.retweetsCount + 1
+            } 
+            : tweet
+        )
+      )
+    } catch (error) {
+      console.log("Error while retweet tweet !!", error)
+    }
+  }
+
+  const bookmarkHandler = async(tweetId) => {
+    try {
+      const response = await axios.post(bookmarkServer, { tweetId }, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem("accessToken")}`
+        }
+      })
+
+      console.log(response)
+
+      setAllTweets(
+        allTweets.map((tweet) =>
+          tweet._id === tweetId
+            ? {
+              ...tweet,
+              isBookmarked: !tweet.isBookmarked,
+            } 
+            : tweet
+        )
+      )
+    } catch (error) {
+      console.log("Error while bookmark tweet !!", error)
     }
   }
     return (
@@ -151,7 +204,13 @@ function AllTweets() {
                   <FaRegComment className="cursor-pointer text-[#71767b]" onClick={() => viewHandler(tweet._id)}  />
                   <small className="mt-[-4px]">{tweet.commentsCount === 0 ? "" : tweet.commentsCount}</small>
                 </div>
-                <BiRepost className="cursor-pointer text-[#71767b] text-lg" />
+                <div className="flex gap-1 text-[#71767b]">
+                  <BiRepost 
+                  className={`cursor-pointer text-lg ${tweet.isRetweet ? "text-green-600" : "text-[#71767b]"}`} 
+                  onClick={() => retweetHandler(tweet._id)}  
+                  />
+                  <small className="mt-[-4px]">{tweet.retweetsCount === 0 ? "" : tweet.retweetsCount}</small>
+                </div>
                 <div className="flex gap-1 text-[#71767b]">
                   {tweet.isLiked ? (
                     <>
@@ -166,7 +225,16 @@ function AllTweets() {
                   )}
                 </div>
                 <CgInsights className="cursor-pointer text-[#71767b] text-lg" />
-                <CiBookmark className="cursor-pointer text-[#71767b] text-lg" />
+                {/* <CiBookmark className="cursor-pointer text-[#71767b] text-lg" onClick={() => bookmarkHandler(tweet._id)} /> */}
+                {tweet.isBookmarked ? (
+                    <>
+                    <IoBookmark className="cursor-pointer text-[#1d9bf0] text-lg" onClick={() => bookmarkHandler(tweet._id)} />
+                    </>
+                  ) : (
+                    <>
+                    <IoBookmarkOutline className="cursor-pointer text-[#71767b] text-lg" onClick={() => bookmarkHandler(tweet._id)} />
+                    </>
+                  )}
               </div>
               <div className="text-xs">
                 <RiShare2Line className="cursor-pointer text-[#71767b] text-lg" />

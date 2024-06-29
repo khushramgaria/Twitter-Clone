@@ -105,7 +105,11 @@ function ViewTweet () {
               <FaRegComment className="cursor-pointer text-[#71767b]" />
               <small className="mt-[-4px]">{data.commentsCount === 0 ? "" : data.commentsCount}</small>
             </div>
-            <BiRepost className="cursor-pointer text-[#71767b] text-lg" />
+            <div className="flex gap-1 text-[#71767b]">
+              <BiRepost className="cursor-pointer text-[#71767b]" />
+              <small className="mt-[-4px]">{data.retweetsCount === 0 ? "" : data.retweetsCount}</small>
+            </div>
+            {/* <BiRepost className="cursor-pointer text-[#71767b] text-lg" /> */}
             <div className="flex gap-1 text-[#71767b]">
               <IoHeartOutline className="cursor-pointer text-[#71767b] text-lg" onClick={() => likeHandler(data._id)} />
               <small className="mt-[-3px]">{data.likesCount === 0 ? "" : data.likesCount}</small>
