@@ -10,6 +10,7 @@ function Register() {
     const [ basicDetailComp, setBasicDetailComp ] = useState(true)
     const [ passwordComp, setPasswordComp] = useState(false)
     const [ usernameComp, setUsernameComp] = useState(false)
+    const [isRegister, setIsRegister] = useState(false)
 
     const [name, setName] = useState("")
     const [email, setEmail] = useState("")
@@ -18,6 +19,7 @@ function Register() {
     const [username, setUsername] = useState("")
 
     const [error, setError] = useState("")
+    const [registerSuccess, setRegisterSuccess] = useState("")
 
     const goToPassHandler = (e) => {
         e.preventDefault()
@@ -88,6 +90,8 @@ function Register() {
     const registerHandler = async (e) => {
         e.preventDefault()
         setError("")
+        setIsRegister(true)
+        setRegisterSuccess("Registering...")
         if (username.trim() === "") {
             setError("Username is required !!")
             return
@@ -111,7 +115,11 @@ function Register() {
             if(response.data.statusCode === 200) {
                 console.log("User Registered Successfully !!")
             }
-            navigate("/login")
+            setIsRegister(false)
+            setRegisterSuccess("Registered Successfully !!")
+            setTimeout(() => {
+                navigate("/login")
+            }, 2000)
         } catch (error) {
             console.log("Error while registering user !!", error)
             setError("Error while registering user. try later !!")
@@ -204,13 +212,14 @@ function Register() {
             </div>
             <div>
                 <p className='text-red-500 mt-2 text-sm'>{error}</p>
+                <p className='text-green-500 mt-2 text-sm'>{registerSuccess}</p>
             </div>
             <div className='mt-36'>
                 <button 
-                className='w-full border rounded-full py-3 font-bold hover:bg-white hover:text-black'
+                className={`w-full border rounded-full py-3 font-bold hover:bg-white hover:text-black ${isRegister ? "cursor-wait" : ""}`}
                 onClick={registerHandler}
                 >
-                    Confirm
+                    {isRegister ? "Please wait..." : "Confirm"}
                 </button>
             </div>
             </>
