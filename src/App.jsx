@@ -16,6 +16,7 @@ import Bookmark from "./pages/Bookmark"
 import Communities from "./pages/Communities"
 import Premium from "./pages/Premium"
 import ChatSection from "./components/ChatSection"
+import ChangePassword from "./pages/ChangePassword"
 
 function App() {
 
@@ -28,6 +29,7 @@ function App() {
           <Route path="/home" element={<Home/>} />
           <Route path="/profile" element={<Profile/>} />
           <Route path="/editprofile" element={<EditProfile/>} />
+          <Route path="/changepassword" element={<ChangePassword/>} />
           <Route path="/tweet" element={<Tweet/>} />
           <Route path="/viewtweet" element={<ViewTweet/>} />
           <Route path="/getotheruser" element={<UserProfile/>} />

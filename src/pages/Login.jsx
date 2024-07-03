@@ -122,7 +122,7 @@ function Login() {
             <div className='mt-4 pt-4'>
                 <button 
                 className='w-full border rounded-full py-3 font-bold hover:bg-white hover:text-black' 
-                onClick={() => navigate("/forgot-password")}
+                onClick={() => navigate("/changepassword")}
                 >
                     Forgot password?
                 </button>
@@ -139,7 +139,7 @@ function Login() {
                     <Input type="text" name="email address, or username" newClass="readOnly" value={userId} />
                     <Input type="text" name="Password" onChange={onChangePassword} value={password} />
                 </div>
-                <Link to="/forgot-password"><span className='text-[#1d9bf0] justify-start text-sm'>Forgot Password?</span></Link>
+                <Link to="/changepassword"><span className='text-[#1d9bf0] justify-start text-sm'>Forgot Password?</span></Link>
                 <p className='text-red-500 mt-2 text-sm'>{error}</p>
             </div>
             <div className='mt-4 pt-4'>

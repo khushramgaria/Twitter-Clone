@@ -14,6 +14,10 @@ export const updateAvatarServer = `${server}/users/update-avatar`
 
 export const updateCoverImageServer = `${server}/users/update-coverimage`
 
+export const checkUserExists = `${server}/users/check-user-exists`
+
+export const changePassword = `${server}/users/change-password`
+
 export const getCurrentUserServer = `${server}/users/get-current-user`
 
 export const getOtherUserServer = `${server}/users/get-user`
